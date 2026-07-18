@@ -1,0 +1,692 @@
+/* ==============================================================================
+   SuiriMap Design System
+   ============================================================================== */
+:root {
+    --bg-dark: #0b0f19;
+    --panel-bg: #161c2a;
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --accent-green: #10b981;
+    --accent-green-hover: #059669;
+    --accent-red: #ef4444;
+    --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-heading: 'Outfit', var(--font-main);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Sidebar Layout */
+.sidebar {
+    width: 380px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: var(--accent-blue);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+}
+
+.logo-text {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.sidebar-content {
+    padding: 0.8rem 1.2rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Scrollbar styles for sidebar */
+.sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Control Sections */
+.control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.control-section h3 {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
+/* Layer & Mode Toggle buttons */
+.layer-toggle-container,
+.mode-select-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.3rem;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+}
+
+.mode-select-container {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+
+
+.layer-btn,
+.mode-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.layer-btn:hover,
+.mode-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.layer-btn.active,
+.mode-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+#btn-mode-delete.active {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+}
+
+.mode-hint {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+    border-radius: 6px;
+    border-left: 2px solid var(--accent-blue);
+}
+
+/* Checkbox Toggle Switch */
+.checkbox-container {
+    margin-top: 0.3rem;
+}
+
+.switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.switch-label input {
+    display: none;
+}
+
+.switch-slider {
+    width: 40px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.3s ease;
+    border: 1px solid var(--panel-border);
+}
+
+.switch-slider::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.switch-label input:checked + .switch-slider {
+    background: var(--accent-blue);
+}
+
+.switch-label input:checked + .switch-slider::before {
+    transform: translateX(20px);
+}
+
+/* Action Buttons */
+.action-btn-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+}
+
+.btn {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-success {
+    background: var(--accent-green);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-success:hover {
+    background: var(--accent-green-hover);
+    transform: translateY(-1px);
+}
+
+.btn-danger-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--panel-border);
+}
+
+.btn-danger-outline:hover {
+    color: var(--accent-red);
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Info Cards */
+.info-card {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 0.5rem;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.info-table th {
+    text-align: left;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.4rem 0.2rem;
+    width: 80px;
+    vertical-align: top;
+}
+
+.info-table td {
+    color: var(--text-primary);
+    padding: 0.4rem 0.2rem;
+}
+
+.address-cell {
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+/* Waterway edits */
+.info-card input[type="text"],
+.info-card select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.4rem;
+    font-size: 0.8rem;
+    outline: none;
+}
+
+.info-card input[type="text"]:focus,
+.info-card select:focus {
+    border-color: var(--accent-blue);
+}
+
+.empty-info {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border: 1px dashed var(--panel-border);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    line-height: 1.5;
+}
+
+/* Map Container Layout */
+.map-container {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    background: #090d16;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+/* Customize Leaflet elements to match Dark Theme */
+.leaflet-container {
+    background: #090d16 !important;
+}
+
+.leaflet-bar {
+    border: 1px solid var(--panel-border) !important;
+    box-shadow: var(--shadow-premium) !important;
+}
+
+.leaflet-bar a {
+    background-color: var(--panel-bg) !important;
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--panel-border) !important;
+    transition: all 0.2s ease;
+}
+
+.leaflet-bar a:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.leaflet-popup-content-wrapper {
+    background: var(--panel-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--panel-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-premium) !important;
+}
+
+.leaflet-popup-tip {
+    background: var(--panel-bg) !important;
+    border: 1px solid var(--panel-border) !important;
+}
+
+/* Waterway Line SVG Animations (Dot Dash flowing) */
+@keyframes flow-animation {
+    to {
+        stroke-dashoffset: -20;
+    }
+}
+
+.flow-line {
+    animation: flow-animation 0.8s linear infinite;
+}
+
+/* Toast message styling */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #10b981;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ==============================================================================
+   System List Section Styles
+   ============================================================================== */
+.system-list {
+    max-height: 120px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 0.5rem;
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.system-list::-webkit-scrollbar {
+    width: 4px;
+}
+.system-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.system-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.system-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.system-item.active {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+}
+
+.system-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+}
+
+.system-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.system-item.active .system-badge {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.system-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.system-actions {
+    display: flex;
+    align-items: center;
+}
+
+.system-delete-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.2rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.system-delete-btn:hover {
+    color: var(--accent-red);
+}
+
+.empty-list-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 1.5rem 0;
+    font-style: italic;
+}
+
+/* ==============================================================================
+   Facility Map Marker & Detail Styles
+   ============================================================================== */
+
+/* Custom Leaflet DivIcon styling for facility pins */
+.facility-marker-icon {
+    background: var(--panel-bg);
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.facility-marker-icon:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+}
+
+.facility-marker-icon i {
+    font-size: 1rem;
+}
+
+/* Facility type specific border colors */
+.facility-marker-icon.intake {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.facility-marker-icon.gate {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+.facility-marker-icon.junction {
+    border-color: #f59e0b; /* 黄色/オレンジ */
+    color: #f59e0b;
+}
+
+.facility-marker-icon.other {
+    border-color: var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+/* Photo Upload & Preview UI */
+.image-preview-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed var(--panel-border);
+    border-radius: 10px;
+    min-height: 120px;
+    margin-top: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    padding: 0.5rem;
+    transition: border-color 0.2s ease;
+}
+
+.image-preview-container:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.no-image-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.no-image-text::before {
+    content: '\f03e';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.15);
+}
+
+/* Select option styling in forms */
+.info-card textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    min-height: 70px;
+    resize: vertical;
+    font-family: var(--font-main);
+    outline: none;
+}
+
+.info-card textarea:focus {
+    border-color: var(--accent-blue);
+}
+
+/* Button small styling */
+.btn-sm {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.75rem !important;
+    border-radius: 6px !important;
+    width: auto !important;
+    align-self: flex-start;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border: 1px solid var(--panel-border);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+}
+
+/* Facility marker highlighted styling on selection */
+.facility-marker-icon.selected {
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 12px #f59e0b, 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+    transform: scale(1.2);
+}
+
+/* Hide default HTML5 number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+

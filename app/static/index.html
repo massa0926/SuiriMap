@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水利マップ - 地域水路見える化システム</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css?v=2.2">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Control Panel -->
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-droplet logo-icon"></i>
+                    <span class="logo-text">水利マップ</span>
+                </div>
+            </header>
+
+            <div class="sidebar-content">
+                <!-- Layer controls -->
+                <section class="control-section">
+                    <h3><i class="fa-solid fa-layer-group"></i> 1. 地図レイヤー切り替え</h3>
+                    <div class="layer-toggle-container">
+                        <button class="layer-btn" id="btn-layer-std">
+                            <i class="fa-solid fa-map"></i> 地理院標準地図
+                        </button>
+                        <button class="layer-btn active" id="btn-layer-ortho">
+                            <i class="fa-solid fa-image"></i> 地理院航空写真
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- Edit controls -->
+                <section class="control-section">
+                    <h3><i class="fa-solid fa-pen-ruler"></i> 2. モード切替</h3>
+                    <div class="mode-select-container">
+                        <button class="mode-btn active" id="btn-mode-view">
+                            <i class="fa-solid fa-hand"></i> 閲覧
+                        </button>
+                        <button class="mode-btn" id="btn-mode-add">
+                            <i class="fa-solid fa-plus"></i> 水路＋
+                        </button>
+                        <button class="mode-btn" id="btn-mode-add-facility">
+                            <i class="fa-solid fa-location-dot"></i> 施設＋
+                        </button>
+                    </div>
+                    <p class="mode-hint" id="mode-hint">閲覧モード：水路や施設をクリックすると詳細情報を表示します</p>
+                    
+                    <div class="action-btn-container">
+                        <button class="btn btn-success" id="btn-save-waterways" style="font-size: 0.8rem; padding: 0.5rem 0.3rem;">
+                            <i class="fa-solid fa-floppy-disk"></i> 水路データ保存
+                        </button>
+                        <button class="btn btn-danger-outline" id="btn-clear-draft" style="font-size: 0.8rem; padding: 0.5rem 0.3rem;">
+                            <i class="fa-solid fa-rotate-left"></i> 編集中の下書き消去
+                        </button>
+                    </div>
+                    <div class="action-btn-container" style="margin-top: 0.4rem;">
+                        <button class="btn btn-secondary" id="btn-export-file" style="font-size: 0.8rem; padding: 0.5rem 0.3rem; flex: 1;">
+                            <i class="fa-solid fa-file-export"></i> ファイル出力
+                        </button>
+                        <button class="btn btn-secondary" id="btn-import-file-trigger" style="font-size: 0.8rem; padding: 0.5rem 0.3rem; flex: 1;">
+                            <i class="fa-solid fa-file-import"></i> ファイル読込
+                        </button>
+                        <input type="file" id="input-import-file" accept=".json,.geojson" style="display: none;">
+                    </div>
+                </section>
+
+                <!-- Waterway System List -->
+                <section class="control-section system-list-section">
+                    <h3><i class="fa-solid fa-list-ol"></i> 3. 水路系統一覧</h3>
+                    <div class="system-list" id="system-list">
+                        <div class="empty-list-text">登録された系統がありません</div>
+                    </div>
+                </section>
+
+                <!-- Information Display -->
+                <section class="control-section info-section">
+                    <h3><i class="fa-solid fa-circle-info"></i> 4. 選択された情報</h3>
+                    
+
+
+                    <!-- Waterway info card -->
+                    <div class="info-card" id="waterway-info-card" style="display: none;">
+                        <h4 class="card-title"><i class="fa-solid fa-arrows-spin"></i> 水路系統情報</h4>
+                        <table class="info-table">
+                            <tr>
+                                <th>系統番号</th>
+                                <td>
+                                    <div class="sys-no-spinner" style="display: flex; align-items: center; gap: 0.3rem;">
+                                        <button class="btn btn-secondary btn-sm" id="btn-sys-no-dec" style="padding: 0.3rem 0.6rem !important; margin: 0; width: auto !important;">-</button>
+                                        <input type="number" id="waterway-sys-no" min="1" step="1" value="1" style="width: 70px !important; text-align: center; margin: 0; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 6px; color: var(--text-primary); padding: 0.4rem; font-size: 0.8rem; outline: none;">
+                                        <button class="btn btn-secondary btn-sm" id="btn-sys-no-inc" style="padding: 0.3rem 0.6rem !important; margin: 0; width: auto !important;">+</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>系統名</th>
+                                <td>
+                                    <input type="text" id="waterway-name" placeholder="例: 大池幹線, 東分水路" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>太さ・色</th>
+                                <td>
+                                    <div style="display: flex; gap: 0.4rem; align-items: center; width: 100%;">
+                                        <select id="waterway-weight" style="flex: 1; margin: 0; min-width: 0;">
+                                            <option value="main">本線（太）</option>
+                                            <option value="branch">支線（中）</option>
+                                        </select>
+                                        <select id="waterway-color" style="flex: 1; margin: 0; min-width: 0;">
+                                            <!-- JavaScriptで動的に追加されます -->
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>説明</th>
+                                <td>
+                                    <textarea id="waterway-desc" placeholder="系統の説明や水利権の情報など..."></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- 新規追加用の決定・キャンセルボタン -->
+                        <div class="action-btn-container" id="waterway-add-actions" style="display: none; flex-direction: row; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-success" id="btn-waterway-confirm" style="padding: 0.5rem; font-size: 0.8rem;">
+                                <i class="fa-solid fa-circle-check"></i> 追加する
+                            </button>
+                            <button class="btn btn-danger-outline" id="btn-waterway-cancel" style="padding: 0.5rem; font-size: 0.8rem; border-color: rgba(239, 68, 68, 0.4);">
+                                <i class="fa-solid fa-circle-xmark"></i> キャンセル
+                            </button>
+                        </div>
+
+                        <!-- 既存編集時のアクションボタン（更新・削除） -->
+                        <div id="waterway-edit-actions" class="action-btn-container" style="display: none; margin-top: 0.8rem;">
+                            <button class="btn btn-primary" id="btn-waterway-update" style="padding: 0.5rem; font-size: 0.8rem; flex: 1;">
+                                <i class="fa-solid fa-pen-to-square"></i> 更新する
+                            </button>
+                            <button class="btn btn-danger-outline" id="btn-waterway-delete" style="padding: 0.5rem; font-size: 0.8rem; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-red); flex: 1;">
+                                <i class="fa-solid fa-trash-can"></i> 削除
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Facility info card -->
+                    <div class="info-card" id="facility-info-card" style="display: none;">
+                        <h4 class="card-title"><i class="fa-solid fa-map-pin"></i> 施設詳細情報</h4>
+                        <table class="info-table">
+                            <tr>
+                                <th>施設名</th>
+                                <td>
+                                    <input type="text" id="facility-name" placeholder="例: 第1分水門, 取水口A" value="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>タイプ</th>
+                                <td>
+                                    <select id="facility-type">
+                                        <option value="intake">取水口 (Intake)</option>
+                                        <option value="gate">止水板 / 水門 (Gate)</option>
+                                        <option value="junction">分岐点 (Junction)</option>
+                                        <option value="other">その他 (Other)</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>所属系統</th>
+                                <td>
+                                    <select id="facility-waterway-id">
+                                        <!-- 動的に水路系統が追加されます -->
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>説明</th>
+                                <td>
+                                    <textarea id="facility-desc" placeholder="施設の使用方法、開閉スケジュールなど..."></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>写真</th>
+                                <td>
+                                    <input type="file" id="facility-image-input" accept="image/*" style="display: none;">
+                                    <button class="btn btn-secondary btn-sm" id="btn-upload-trigger">
+                                        <i class="fa-solid fa-camera"></i> 写真をアップロード
+                                    </button>
+                                    <div class="image-preview-container" id="facility-image-preview-container">
+                                        <img id="facility-image-preview" src="" alt="施設写真" style="display: none; max-width: 100%; border-radius: 8px; margin-top: 0.5rem; border: 1px solid var(--panel-border);">
+                                        <div class="no-image-text" id="no-image-text">写真未登録</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <!-- 既存編集時のアクションボタン（更新・削除） -->
+                        <div id="facility-edit-actions" class="action-btn-container" style="display: none; margin-top: 0.8rem;">
+                            <button class="btn btn-primary" id="btn-facility-update" style="padding: 0.5rem; font-size: 0.8rem; flex: 1;">
+                                <i class="fa-solid fa-pen-to-square"></i> 更新する
+                            </button>
+                            <button class="btn btn-danger-outline" id="btn-facility-delete" style="padding: 0.5rem; font-size: 0.8rem; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-red); flex: 1;">
+                                <i class="fa-solid fa-trash-can"></i> 削除
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="empty-info" id="info-empty">
+                        <p>地図上の水路または施設をクリックすると、ここに詳細が表示され、編集・設定が行えます。</p>
+                    </div>
+                </section>
+            </div>
+        </aside>
+
+        <!-- Map Container -->
+        <main class="map-container">
+            <div id="map"></div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">保存が完了しました。</span>
+    </div>
+
+    <!-- Leaflet.js Script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom JS -->
+    <script src="js/app.js?v=1.2"></script>
+</body>
+</html>
